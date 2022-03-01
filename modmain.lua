@@ -1,5 +1,6 @@
 PrefabFiles = {
-    "rus_hound_collar"
+    "rus_hound_collar",
+    "rus_hound"
 }
 
 Assets = {

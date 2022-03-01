@@ -8,14 +8,14 @@ local assets =
 
 local prefabs =
 {
-    "koko",
+    "rus_hound",
     "small_puff"
 }
 
 local function SpawnKoko(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     inst:Remove()
-    SpawnPrefab("koko").Transform:SetPosition(x, y, z)
+    SpawnPrefab("rus_hound").Transform:SetPosition(x, y, z)
     SpawnPrefab("small_puff").Transform:SetPosition(x, y, z)
 end
 
@@ -52,4 +52,4 @@ local function fn(Sim)
     return inst
 end
 
-return  Prefab("common/inventory/rus_hound_collar", fn, assets, prefabs)
+return Prefab("common/inventory/rus_hound_collar", fn, assets, prefabs)

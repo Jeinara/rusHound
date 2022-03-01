@@ -29,13 +29,11 @@ local function ShouldRunAway(guy)
     return guy:HasTag("epic") and not guy:HasTag("notarget")
 end
 
-local koko_brain = Class(Brain, function(self, inst)
+local rus_hound_brain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
-function koko_brain:OnStart()
-    
-
+function rus_hound_brain:OnStart()
 
     local root = PriorityNode(
     {

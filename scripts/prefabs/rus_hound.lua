@@ -41,9 +41,6 @@ local SLEEP_NEAR_HOME_DISTANCE = 10
 local SHARE_TARGET_DIST = 30
 local HOME_TELEPORT_DIST = 30
 
-local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
-local FREEZABLE_TAGS = { "freezable" }
-
 -- Ночное поведение
 local function ShouldWakeUp(inst)
     -- TODO
@@ -68,62 +65,54 @@ local function OnKilled(inst)
     -- You are a horrible person.
     local collar = SpawnPrefab("rus_hound_collar")
     collar.Transform:SetPosition(x, y, z)
-    collar.MyName = inst.MyName
+    collar.MyName = inst.name
 end
 
--- Выбор цели (Возможно про цель следования)
-local RETARGET_CANT_TAGS = { "wall", "houndmound", "hound", "houndfriend" }
+------------
 local function retargetfn(inst)
-    local leader = inst.components.follower.leader
-    --if leader ~= nil and leader.sg ~= nil and leader.sg:HasStateTag("statue") then
-    --    return
-    --end
-    local playerleader = leader ~= nil and leader:HasTag("player")
-    local ispet = inst:HasTag("rus_hound")
-    return (leader == nil or
-            (ispet and not playerleader) or
-            inst:IsNear(leader, TUNING.HOUND_FOLLOWER_AGGRO_DIST))
-            and FindEntity(
-            inst,
-            (ispet or leader ~= nil) and TUNING.HOUND_FOLLOWER_TARGET_DIST or TUNING.HOUND_TARGET_DIST,
-            function(guy)
-                return guy ~= leader and inst.components.combat:CanTarget(guy)
-            end,
-            nil,
-            RETARGET_CANT_TAGS
-    )
-            or nil
+    --сейчас ретаргет происходит только в случае, если нет лидера, и то только для установки лидера
+    if inst.components.follower and inst.components.follower:GetLeader() == nil then
+        local nearest =
+        FindEntity(inst, 100, function(guy)
+            return guy:HasTag("player")
+        end, nil, nil)
+        if nearest and nearest.components.leader then
+            nearest.components.leader:AddFollower(inst)
+            --inst.components.follower:AddLoyaltyTime(999999)
+        end
+    end
 end
 
 local function KeepTarget(inst, target)
-    local leader = inst.components.follower.leader
-    local playerleader = leader ~= nil and leader:HasTag("player")
-    local ispet = inst:HasTag("rus_hound")
-    --return (leader == nil or
-    --        (ispet and not playerleader) or
-    --        inst:IsNear(leader, TUNING.HOUND_FOLLOWER_RETURN_DIST))
-    --        and inst.components.combat:CanTarget(target)
-    --        and (not (ispet or leader ~= nil) or
-    --        inst:IsNear(target, TUNING.HOUND_FOLLOWER_TARGET_KEEP))
+
+    if inst.components.health.currenthealth < (inst.components.health.maxhealth/3)
+            or target:HasTag("rus_hound")
+            or not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE*2) then
+        return false
+    else
+        return inst.components.combat:CanTarget(target)
+                and inst:IsNear(target, TUNING.HOUND_FOLLOWER_TARGET_KEEP)
+    end
 end
 
+------------
 local function OnAttacked(inst, data)
-    --inst.components.combat:SetTarget(data.attacker)
-    --inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST,
-    --        function(dude)
-    --            return not (dude.components.health ~= nil and dude.components.health:IsDead())
-    --                    and dude:HasTag("rus_hound")
-    --                    and data.attacker ~= (dude.components.follower ~= nil and dude.components.follower.leader or nil)
-    --        end, 5)
+    inst.components.combat:SetTarget(data.attacker)
+    inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST,
+            function(dude)
+                return not (dude.components.health ~= nil and dude.components.health:IsDead())
+                        and not dude:HasTag("rus_hound")
+                        and data.attacker ~= (dude.components.follower ~= nil and dude.components.follower.leader or nil)
+            end, 5)
 end
 
 local function OnAttackOther(inst, data)
-    --inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST,
-    --        function(dude)
-    --            return not (dude.components.health ~= nil and dude.components.health:IsDead())
-    --                    and dude:HasTag("rus_hound")
-    --                    and data.target ~= (dude.components.follower ~= nil and dude.components.follower.leader or nil)
-    --        end, 5)
+    inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST,
+            function(dude)
+                return not (dude.components.health ~= nil and dude.components.health:IsDead())
+                        and not dude:HasTag("rus_hound")
+                        and data.target ~= (dude.components.follower ~= nil and dude.components.follower.leader or nil)
+            end, 5)
 end
 
 local function GetReturnPos(inst)
@@ -135,15 +124,15 @@ end
 
 local function DoReturn(inst)
     print("DoReturn", inst)
-    --if inst.components.homeseeker ~= nil and inst.components.homeseeker:HasHome() then
-    --    if inst:HasTag("rus_hound") then
-    --        if inst.components.homeseeker.home:IsAsleep() and not inst:IsNear(inst.components.homeseeker.home, HOME_TELEPORT_DIST) then
-    --            inst.Physics:Teleport(GetReturnPos(inst.components.homeseeker.home))
-    --        end
-    --    elseif inst.components.homeseeker.home.components.childspawner ~= nil then
-    --        inst.components.homeseeker.home.components.childspawner:GoHome(inst)
-    --    end
-    --end
+    if inst.components.homeseeker ~= nil and inst.components.homeseeker:HasHome() then
+        if inst:HasTag("rus_hound") then
+            if inst.components.homeseeker.home:IsAsleep() and not inst:IsNear(inst.components.homeseeker.home, HOME_TELEPORT_DIST) then
+                inst.Physics:Teleport(GetReturnPos(inst.components.homeseeker.home))
+            end
+        elseif inst.components.homeseeker.home.components.childspawner ~= nil then
+            inst.components.homeseeker.home.components.childspawner:GoHome(inst)
+        end
+    end
 end
 
 local function OnEntitySleep(inst)
@@ -180,39 +169,20 @@ local function GetStatus(inst)
 end
 
 local function OnStartFollowing(inst, data)
-    --if inst.leadertask ~= nil then
-    --    inst.leadertask:Cancel()
-    --    inst.leadertask = nil
-    --end
-    --if data == nil or data.leader == nil then
-    --    inst.components.follower.maxfollowtime = nil
-    --elseif data.leader:HasTag("player") then
-    --    inst.components.follower.maxfollowtime = TUNING.HOUNDWHISTLE_EFFECTIVE_TIME * 1.5
-    --else
-    --    inst.components.follower.maxfollowtime = nil
-    --    if inst.components.entitytracker:GetEntity("leader") == nil then
-    --        inst.components.entitytracker:TrackEntity("leader", data.leader)
-    --    end
-    --end
+    -- Наверное понадобится, когда буду прорабатывать дом
 end
 
 local function RestoreLeader(inst)
-    --inst.leadertask = nil
-    --local leader = inst.components.entitytracker:GetEntity("leader")
-    --if leader ~= nil and not leader.components.health:IsDead() then
-    --    inst.components.follower:SetLeader(leader)
-    --    leader:PushEvent("restoredfollower", { follower = inst })
-    --end
+    inst.leadertask = nil
+    local leader = inst.components.entitytracker:GetEntity("leader")
+    if leader ~= nil and not leader.components.health:IsDead() then
+        inst.components.follower:SetLeader(leader)
+        leader:PushEvent("restoredfollower", { follower = inst })
+    end
 end
 
 local function OnStopFollowing(inst)
-    --inst.leader_offset = nil
-    --if not inst.components.health:IsDead() then
-    --    local leader = inst.components.entitytracker:GetEntity("leader")
-    --    if leader ~= nil and not leader.components.health:IsDead() then
-    --        inst.leadertask = inst:DoTaskInTime(.2, RestoreLeader)
-    --    end
-    --end
+    --inst.leadertask = inst:DoTaskInTime(.2, RestoreLeader)
 end
 
 
@@ -232,19 +202,6 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst.DynamicShadow:SetSize(2.5, 1.5)
     inst.Transform:SetFourFaced()
 
-    inst.AnimState:SetBank(bank)
-    inst.AnimState:SetBuild(build)
-    inst.AnimState:PlayAnimation("idle")
-
-    inst.sounds = sounds
-
-    if inst.MyName == nil then
-        inst.MyName = "Pretty Lady"
-    end
-
-    inst:AddComponent("named")--
-    inst.components.named:SetName(inst.MyName)
-
     inst:AddTag("notraptrigger")--
     inst:AddTag("companion")--
     inst:AddTag("rus_hound")
@@ -253,6 +210,10 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
         inst:AddTag(tag)
     end
 
+    inst.AnimState:SetBank(bank)
+    inst.AnimState:SetBuild(build)
+    inst.AnimState:PlayAnimation("idle")
+
     inst:AddComponent("spawnfader")
 
     inst.entity:SetPristine()
@@ -260,6 +221,12 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.sounds = sounds
+
+    inst:AddComponent("named")--
+    inst:AddComponent("named_replica")
+    inst.components.named:SetName("Pretty Lady")
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.runspeed = TUNING.HOUND_SPEED
@@ -303,9 +270,10 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst:AddComponent("follower")--
     inst:ListenForEvent("startfollowing", OnStartFollowing)
     inst:ListenForEvent("stopfollowing", OnStopFollowing)
+    inst.components.follower.keepdeadleader = true
 
     inst:AddComponent("sanityaura")--
-    inst.components.sanityaura.aura = 0
+    inst.components.sanityaura.aura = 5
 
     inst:AddComponent("combat")--
     inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE)
@@ -313,11 +281,6 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst.components.combat:SetRetargetFunction(3, retargetfn)
     inst.components.combat:SetKeepTargetFunction(KeepTarget)
     inst.components.combat:SetHurtSound(inst.sounds.hurt)
-
-    inst:ListenForEvent("newcombattarget", OnNewTarget)--
-    inst:ListenForEvent("attacked", OnAttacked)--
-    inst:ListenForEvent("onattackother", OnAttackOther)
-    inst:ListenForEvent("death", OnKilled)--
 
     inst:AddComponent("health") --
     inst.components.health:SetMaxHealth(1000)
@@ -328,7 +291,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst.components.lootdropper:SetChanceLootTable('hound')
 
     inst:AddComponent("inspectable")--
-    inst.components.inspectable.getstatus = ("Сидеть, " .. inst.MyName)
+    inst.components.inspectable.description = ("Сидеть, " .. inst.name)
 
     inst:AddComponent("sleeper")--
     inst.components.sleeper:SetResistance(3)
@@ -341,6 +304,11 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
+
+    inst:ListenForEvent("newcombattarget", OnNewTarget)--
+    inst:ListenForEvent("attacked", OnAttacked)--
+    inst:ListenForEvent("onattackother", OnAttackOther)
+    inst:ListenForEvent("death", OnKilled)--
 
     return inst
 end
@@ -358,4 +326,4 @@ local function fndefault()
     return inst
 end
 
-return Prefab("common/monsters/rushound", fndefault, assets, prefabs)
+return Prefab("common/monsters/rus_hound", fndefault, assets, prefabs)
