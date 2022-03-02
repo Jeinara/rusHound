@@ -216,7 +216,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst:AddComponent("named")--
     inst:AddComponent("named_replica")
-    inst.components.named:SetName("Pretty Lady")
+    inst.components.named:SetName("Макс")
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.runspeed = TUNING.HOUND_SPEED
