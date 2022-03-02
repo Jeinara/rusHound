@@ -18,9 +18,13 @@ local Recipe = GLOBAL.Recipe
 local Ingredient = GLOBAL.Ingredient
 local TECH = GLOBAL.TECH
 
-GLOBAL.STRINGS.NAMES.RUS_HOUND_COLLAR = "Collar"
-STRINGS.RECIPE_DESC.RUS_HOUND_COLLAR = "Call forth the hounds!"
-STRINGS.CHARACTERS.GENERIC.DESCRIBE.RUS_HOUND_COLLAR= "A portal to a world unknown."
+GLOBAL.STRINGS.NAMES.RUS_HOUND_COLLAR = "Ошейник"
+STRINGS.RECIPE_DESC.RUS_HOUND_COLLAR = "Каждой гончей по ошейнику"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.RUS_HOUND_COLLAR = "Свисни - и твой верный друг появится"
+
+GLOBAL.STRINGS.NAMES.HOUND_DOGHOUSE = "Будка"
+STRINGS.RECIPE_DESC.HOUND_DOGHOUSE = "Уютный домик для домашней гончей"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.HOUND_DOGHOUSE = "Как их там столько помещается?"
 
 -- Custom config options --
 

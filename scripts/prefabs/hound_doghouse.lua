@@ -143,7 +143,7 @@ local function fn()
 
     ---------------------
     inst:AddComponent("inspectable")
-    inst.components.inspectable.getstatus = ("Собачья будка")
+    inst.components.inspectable.description = ("Собачья будка")
 
     ---------------------
     inst:AddComponent("kitcoonden")

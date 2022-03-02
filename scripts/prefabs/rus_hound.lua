@@ -71,7 +71,6 @@ local function retargetfn(inst)
         end, nil, nil)
         if nearest and nearest.components.leader then
             nearest.components.leader:AddFollower(inst)
-            --inst.components.follower:AddLoyaltyTime(999999)
         end
     end
 end
