@@ -119,8 +119,6 @@ local function fn()
 
     MakeSnowCoveredPristine(inst)
 
-    inst.OverrideActivateVerb = OverrideActivateVerb
-
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
