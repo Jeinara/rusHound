@@ -29,13 +29,6 @@ local sounds =
     hurt = "dontstarve/creatures/hound/hurt",
 }
 
-SetSharedLootTable('hound',
-        {
-            {'monstermeat', 1.000},
-            {'houndstooth', 0.125},
-        })
-
-
 local WAKE_TO_FOLLOW_DISTANCE = 8
 local SLEEP_NEAR_HOME_DISTANCE = 10
 local SHARE_TARGET_DIST = 30
@@ -114,6 +107,7 @@ local function OnAttackOther(inst, data)
                         and data.target ~= (dude.components.follower ~= nil and dude.components.follower.leader or nil)
             end, 5)
 end
+------------
 
 local function GetReturnPos(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
@@ -164,10 +158,6 @@ local function OnLoad(inst, data)
     end
 end
 
-local function GetStatus(inst)
-    return nil
-end
-
 local function OnStartFollowing(inst, data)
     -- Наверное понадобится, когда буду прорабатывать дом
 end
@@ -185,6 +175,7 @@ local function OnStopFollowing(inst)
     --inst.leadertask = inst:DoTaskInTime(.2, RestoreLeader)
 end
 
+--TODO нужна система уровней
 
 local function fncommon(bank, build, morphlist, custombrain, tag, data)
     data = data or {}
@@ -267,33 +258,30 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst:AddComponent("entitytracker") --what are you?
 
-    inst:AddComponent("follower")--
+    inst:AddComponent("follower")
     inst:ListenForEvent("startfollowing", OnStartFollowing)
     inst:ListenForEvent("stopfollowing", OnStopFollowing)
     inst.components.follower.keepdeadleader = true
 
-    inst:AddComponent("sanityaura")--
+    inst:AddComponent("sanityaura")
     inst.components.sanityaura.aura = 5
 
-    inst:AddComponent("combat")--
+    inst:AddComponent("combat")
     inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE)
     inst.components.combat:SetAttackPeriod(TUNING.HOUND_ATTACK_PERIOD)
     inst.components.combat:SetRetargetFunction(3, retargetfn)
     inst.components.combat:SetKeepTargetFunction(KeepTarget)
     inst.components.combat:SetHurtSound(inst.sounds.hurt)
 
-    inst:AddComponent("health") --
+    inst:AddComponent("health")
     inst.components.health:SetMaxHealth(1000)
     inst.components.health:StartRegen(5, 0.2)
     inst.components.health.fire_damage_scale = 1 -- Default
 
-    inst:AddComponent("lootdropper")--
-    inst.components.lootdropper:SetChanceLootTable('hound')
-
-    inst:AddComponent("inspectable")--
+    inst:AddComponent("inspectable")
     inst.components.inspectable.description = ("Сидеть, " .. inst.name)
 
-    inst:AddComponent("sleeper")--
+    inst:AddComponent("sleeper")
     inst.components.sleeper:SetResistance(3)
     inst.components.sleeper.testperiod = GetRandomWithVariance(6, 2)
     inst.components.sleeper:SetSleepTest(ShouldSleep)
@@ -305,10 +293,10 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
 
-    inst:ListenForEvent("newcombattarget", OnNewTarget)--
-    inst:ListenForEvent("attacked", OnAttacked)--
+    inst:ListenForEvent("newcombattarget", OnNewTarget)
+    inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("onattackother", OnAttackOther)
-    inst:ListenForEvent("death", OnKilled)--
+    inst:ListenForEvent("death", OnKilled)
 
     return inst
 end

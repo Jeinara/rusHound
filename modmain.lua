@@ -1,6 +1,7 @@
 PrefabFiles = {
     "rus_hound_collar",
-    "rus_hound"
+    "rus_hound",
+    "hound_doghouse"
 }
 
 Assets = {
@@ -26,3 +27,4 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.RUS_HOUND_COLLAR= "A portal to a world unkno
 -- It's \n to start a new line in strings.
 
 AddRecipe("rus_hound_collar", {Ingredient("cutgrass", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+AddRecipe("hound_doghouse", {Ingredient("petals", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
