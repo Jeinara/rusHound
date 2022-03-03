@@ -8,8 +8,6 @@ local prefabs =
     "rus_hound_collar"
 }
 
-local HOUND_NEAR_HOME_DIST = 10
-
 local function onhammered(inst)
     local ipos = inst:GetPosition()
 
@@ -32,7 +30,7 @@ local function onbuilt(inst)
     inst.SoundEmitter:PlaySound("yotc_2022_2/common/den/place")
 
     local x, y, z = inst.Transform:GetWorldPosition()
-    local rus_hounds = TheSim:FindEntities(x, y, z, HOUND_NEAR_HOME_DIST, {"rus_hound"})
+    local rus_hounds = TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"rus_hound"})
     for _, rus_hound in ipairs(rus_hounds) do
         if rus_hound.components.follower.leader == nil then
             inst.components.kitcoonden:AddKitcoon(rus_hound)
@@ -153,7 +151,7 @@ local function fn()
     ---------------------
     inst:AddComponent("playerprox")
     inst.components.playerprox:SetTargetMode(inst.components.playerprox.TargetModes.AllPlayers)
-    inst.components.playerprox:SetDist(TUNING.KITCOON_NEAR_DEN_DIST - 4,TUNING.KITCOON_NEAR_DEN_DIST - 1)
+    inst.components.playerprox:SetDist(TUNING.HOUND_NEAR_HOME_DIST - 4,TUNING.HOUND_NEAR_HOME_DIST - 1)
     inst.components.playerprox:SetOnPlayerNear(OnPlayerApproached)
     inst.components.playerprox:SetOnPlayerFar(OnPlayerLeft)
     inst.components.playerprox:SetPlayerAliveMode(inst.components.playerprox.AliveModes.AliveOnly)

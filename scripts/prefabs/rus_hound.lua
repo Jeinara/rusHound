@@ -36,13 +36,20 @@ local HOME_TELEPORT_DIST = 30
 
 -- Ночное поведение
 local function ShouldWakeUp(inst)
-    -- TODO
-    return false
+    return
+    (
+        (inst.components.follower
+         and inst.components.follower.leader
+         and not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE)
+        )
+        or (inst.components.combat and inst.components.combat.target)
+        or (TheWorld.state.isnight == false)
+    )
 end
 
 local function ShouldSleep(inst)
-    return inst:HasTag("rus_hound")
-            and not TheWorld.state.isday
+    return
+            not TheWorld.state.isday
             and not (inst.components.combat and inst.components.combat.target)
             and not (inst.components.burnable and inst.components.burnable:IsBurning())
             and (not inst.components.homeseeker or inst:IsNear(inst.components.homeseeker.home, SLEEP_NEAR_HOME_DISTANCE))
@@ -256,6 +263,8 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst:SetBrain(custombrain or brain)
 
     inst:AddComponent("entitytracker") --what are you?
+
+    inst:AddComponent("rus_hound")
 
     inst:AddComponent("follower")
     inst:ListenForEvent("startfollowing", OnStartFollowing)
