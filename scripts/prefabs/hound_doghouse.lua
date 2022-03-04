@@ -58,6 +58,7 @@ end
 local function OnAddHound(inst, rus_hound)
     rus_hound.components.follower:SetLeader(nil)
     rus_hound.components.entitytracker:TrackEntity("home", inst)
+    rus_hound:AddTag("sitting_home")
     if rus_hound.components.sleeper ~= nil then
         rus_hound.components.sleeper:WakeUp()
     end
@@ -66,6 +67,7 @@ end
 local function OnRemoveHound(inst, rus_hound)
     if rus_hound:IsValid() then
         rus_hound.components.entitytracker:ForgetEntity("home", inst)
+        rus_hound:RemoveTag("sitting_home")
     end
 end
 

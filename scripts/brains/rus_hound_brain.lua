@@ -29,6 +29,11 @@ local function ShouldRunAway(guy)
     return guy:HasTag("epic") and not guy:HasTag("notarget")
 end
 
+local function GetDenPos(inst)
+    local den = inst.components.entitytracker:GetEntity("home")
+    return den ~= nil and den:GetPosition() or nil
+end
+
 local rus_hound_brain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -37,15 +42,14 @@ function rus_hound_brain:OnStart()
 
     local root = PriorityNode(
     {
-        IfNode(function() return self.inst.partrolactive end, false,
-            Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation(self.inst.patroltracker) end, MAX_WANDER_DIST)),
         Follow(self.inst, function()return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         ChaseAndAttack(self.inst, MAX_CHASE_TIME),
         RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
+        IfNode(function() return self.inst.components.entitytracker:GetEntity("home") ~= nil end, true,
+                Wander(self.inst, function() return GetDenPos(self.inst) end, MAX_WANDER_DIST, {minwalktime = 2, randwalktime = 3, minwaittime = 2, randwaittime = 4 })),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
         Wander(self.inst)
     }, .25)
-    
     self.bt = BT(self.inst, root)
 end
 

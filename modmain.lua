@@ -22,18 +22,20 @@ GLOBAL.STRINGS.CHARACTERS.GENERIC.DESCRIBE.HOUND_DOGHOUSE = "Как их там 
 GLOBAL.STRINGS.NAMES.RUS_HOUND = "Русская Гончая"
 GLOBAL.STRINGS.CHARACTERS.GENERIC.DESCRIBE.RUS_HOUND = "Верный друг"
 
+----------------
+
 TUNING.HOUND_NEAR_HOME_DIST = 10
 
 ---------------- Для управления будкой
 ------ Послать домой
 
-local HOUND_SEND_HOME = AddAction("HOUND_SEND_HOME", "Послать гончую в будку", function(act)
-    -- from gamescripts/actions
+local HOUND_SEND_HOME = AddAction("HOUND_SEND_HOME", "Дать команду \"Домой\"", function(act)
     if
         act.target ~= nil
-                and act.target.components.follower ~= nil
-                and act.target.components.follower:GetLeader() == act.doer
-                and act.doer:HasTag("near_hound_doghouse") then
+        and act.target.components.follower ~= nil
+        and act.target.components.follower:GetLeader() == act.doer
+        and act.doer:HasTag("near_hound_doghouse")
+    then
         local x, y, z = act.target.Transform:GetWorldPosition()
         local den = TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})[1]
         if den ~= nil then
@@ -45,25 +47,54 @@ local HOUND_SEND_HOME = AddAction("HOUND_SEND_HOME", "Послать гончу�
 end)
 HOUND_SEND_HOME.priority = 10
 
-AddComponentAction("SCENE", "rus_hound", function(inst, doer, actions, right)
-    if right then
-        if inst.replica.follower ~= nil and inst.replica.follower:GetLeader() == doer then
-            local x, y, z = inst.Transform:GetWorldPosition()
-            local den = TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})
-            if doer ~= nil and doer:HasTag("near_hound_doghouse") and den ~= nil then
-                table.insert(actions, GLOBAL.ACTIONS.HOUND_SEND_HOME)
-            end
-        end
-    end
-end)
-
 AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(HOUND_SEND_HOME, "dolongaction"))
 AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(HOUND_SEND_HOME, "dolongaction"))
 
 
 ------ Забрать из дома
 
+local HOUND_GET_BACK = AddAction("HOUND_GET_BACK", "Дать команду \"Ко мне\"", function(act)
+    if
+        act.target ~= nil
+        and act.target.components.follower ~= nil
+        and act.target.components.follower:GetLeader() == nil
+        and act.doer:HasTag("near_hound_doghouse")
+    then
+        local x, y, z = act.target.Transform:GetWorldPosition()
+        local den = TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})[1]
+        if den ~= nil then
+            den.components.kitcoonden:RemoveKitcoon(act.target, act.doer)
+            return true
+        end
+    end
+    return false
+end)
+HOUND_GET_BACK.priority = 10
+
+AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(HOUND_GET_BACK, "dolongaction"))
+AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(HOUND_GET_BACK, "dolongaction"))
+
 -----
+AddComponentAction("SCENE", "rus_hound", function(inst, doer, actions, right)
+    if right then
+        print("SCENE", inst, inst:HasTag("sitting_home"))
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local den = TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})
+
+        if doer ~= nil and doer:HasTag("near_hound_doghouse") and den ~= nil then
+            if not inst:HasTag("sitting_home") then
+                if inst.replica.follower ~= nil and inst.replica.follower:GetLeader() == doer then
+                    table.insert(actions, GLOBAL.ACTIONS.HOUND_SEND_HOME)
+                end
+            else
+                if inst.replica.follower ~= nil and inst.replica.follower:GetLeader() == nil then
+                    table.insert(actions, GLOBAL.ACTIONS.HOUND_GET_BACK)
+                end
+            end
+        end
+    end
+end)
+----------------
 local Ingredient = GLOBAL.Ingredient
 
 AddRecipe("rus_hound_collar", {Ingredient("cutgrass", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )

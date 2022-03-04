@@ -35,6 +35,7 @@ local SHARE_TARGET_DIST = 30
 local HOME_TELEPORT_DIST = 30
 
 -- Ночное поведение
+-- TODO добавить логику сна возле дома
 local function ShouldWakeUp(inst)
     return
     (
@@ -70,8 +71,9 @@ end
 
 ------------
 local function retargetfn(inst)
-    --сейчас ретаргет происходит только в случае, если нет лидера, и то только для установки лидера
-    if inst.components.follower and inst.components.follower:GetLeader() == nil then
+    if inst.components.entitytracker:GetEntity("home") == nil
+            and inst.components.follower
+            and inst.components.follower:GetLeader() == nil then
         local nearest =
         FindEntity(inst, 100, function(guy)
             return guy:HasTag("player")
@@ -123,7 +125,7 @@ local function GetReturnPos(inst)
 end
 
 local function DoReturn(inst)
-    print("DoReturn", inst)
+    --print("DoReturn", inst)
     if inst.components.homeseeker ~= nil and inst.components.homeseeker:HasHome() then
         if inst:HasTag("rus_hound") then
             if inst.components.homeseeker.home:IsAsleep() and not inst:IsNear(inst.components.homeseeker.home, HOME_TELEPORT_DIST) then
@@ -162,23 +164,6 @@ local function OnLoad(inst, data)
             inst.sg:GoToState("idle")
         end
     end
-end
-
-local function OnStartFollowing(inst, data)
-    -- Наверное понадобится, когда буду прорабатывать дом
-end
-
-local function RestoreLeader(inst)
-    inst.leadertask = nil
-    local leader = inst.components.entitytracker:GetEntity("leader")
-    if leader ~= nil and not leader.components.health:IsDead() then
-        inst.components.follower:SetLeader(leader)
-        leader:PushEvent("restoredfollower", { follower = inst })
-    end
-end
-
-local function OnStopFollowing(inst)
-    --inst.leadertask = inst:DoTaskInTime(.2, RestoreLeader)
 end
 
 --TODO нужна система уровней
@@ -262,13 +247,11 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst:SetBrain(custombrain or brain)
 
-    inst:AddComponent("entitytracker") --what are you?
+    inst:AddComponent("entitytracker")
 
     inst:AddComponent("rus_hound")
 
     inst:AddComponent("follower")
-    inst:ListenForEvent("startfollowing", OnStartFollowing)
-    inst:ListenForEvent("stopfollowing", OnStopFollowing)
     inst.components.follower.keepdeadleader = true
 
     inst:AddComponent("sanityaura")
