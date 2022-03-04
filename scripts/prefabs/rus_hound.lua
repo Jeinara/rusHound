@@ -50,7 +50,7 @@ end
 
 local function ShouldSleep(inst)
     return
-            not TheWorld.state.isday
+            TheWorld.state.isnight == true
             and not (inst.components.combat and inst.components.combat.target)
             and not (inst.components.burnable and inst.components.burnable:IsBurning())
             and (not inst.components.homeseeker or inst:IsNear(inst.components.homeseeker.home, SLEEP_NEAR_HOME_DISTANCE))
@@ -71,9 +71,12 @@ end
 
 ------------
 local function retargetfn(inst)
-    if inst.components.entitytracker:GetEntity("home") == nil
-            and inst.components.follower
-            and inst.components.follower:GetLeader() == nil then
+    print(inst, "retargetfn")
+    if
+        inst.components.entitytracker:GetEntity("home") == nil and
+        inst.components.follower
+        and inst.components.follower:GetLeader() == nil
+    then
         local nearest =
         FindEntity(inst, 100, function(guy)
             return guy:HasTag("player")
@@ -85,7 +88,7 @@ local function retargetfn(inst)
 end
 
 local function KeepTarget(inst, target)
-
+    print(inst, "|target", target, "|canTarget", inst.components.combat:CanTarget(target), "KeepTarget")
     if inst.components.health.currenthealth < (inst.components.health.maxhealth/3)
             or target:HasTag("rus_hound")
             or not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE*2) then
@@ -97,6 +100,7 @@ local function KeepTarget(inst, target)
 end
 
 ------------
+---Тебя атакуют
 local function OnAttacked(inst, data)
     inst.components.combat:SetTarget(data.attacker)
     inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST,
@@ -107,6 +111,7 @@ local function OnAttacked(inst, data)
             end, 5)
 end
 
+---Ты атакуешь
 local function OnAttackOther(inst, data)
     inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST,
             function(dude)
@@ -153,13 +158,13 @@ end
 
 local function OnSave(inst, data)
     data.ispet = inst:HasTag("rus_hound") or nil
-    print("OnSave", inst, data.ispet)
+    data.isInHome = inst:HasTag("sitting_home") or nil
 end
 
 local function OnLoad(inst, data)
-    print("OnLoad", inst, data.ispet)
-    if data ~= nil and data.ispet then
-        inst:AddTag("rus_hound")
+    if data ~= nil then
+        if data.ispet ~= nil then inst:AddTag("rus_hound") end
+        if data.isInHome ~= nil then inst:AddTag("sitting_home") end
         if inst.sg ~= nil then
             inst.sg:GoToState("idle")
         end
@@ -249,13 +254,15 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst:AddComponent("entitytracker")
 
+    inst:AddComponent("homeseeker")
+
     inst:AddComponent("rus_hound")
 
     inst:AddComponent("follower")
     inst.components.follower.keepdeadleader = true
 
     inst:AddComponent("sanityaura")
-    inst.components.sanityaura.aura = 5
+    inst.components.sanityaura.aura = 1
 
     inst:AddComponent("combat")
     inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE)

@@ -117,6 +117,8 @@ local function fn()
     inst:AddTag("structure")
     inst:AddTag("hound_doghouse")
 
+    --inst:AddTag("prototyper")
+
     MakeSnowCoveredPristine(inst)
 
     inst.entity:SetPristine()
@@ -159,6 +161,10 @@ local function fn()
     inst.components.playerprox:SetPlayerAliveMode(inst.components.playerprox.AliveModes.AliveOnly)
 
     ---------------------
+    --inst:AddComponent("prototyper")
+    --inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.HOUND_HOUSE
+    ---------------------
+
     MakeSnowCovered(inst)
 
     ---------------------

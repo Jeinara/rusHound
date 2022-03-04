@@ -77,7 +77,6 @@ AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(HOUND_GET_BACK,
 -----
 AddComponentAction("SCENE", "rus_hound", function(inst, doer, actions, right)
     if right then
-        print("SCENE", inst, inst:HasTag("sitting_home"))
         local x, y, z = inst.Transform:GetWorldPosition()
         local den = TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})
 
@@ -97,5 +96,5 @@ end)
 ----------------
 local Ingredient = GLOBAL.Ingredient
 
-AddRecipe("rus_hound_collar", {Ingredient("cutgrass", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+AddRecipe("rus_hound_collar", {Ingredient("cutgrass", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, "near_hound_doghouse", "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
 AddRecipe("hound_doghouse", {Ingredient("petals", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
