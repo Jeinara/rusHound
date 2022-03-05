@@ -96,5 +96,5 @@ end)
 ----------------
 local Ingredient = GLOBAL.Ingredient
 
-AddRecipe("rus_hound_collar", {Ingredient("cutgrass", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, "near_hound_doghouse", "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
-AddRecipe("hound_doghouse", {Ingredient("petals", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+AddRecipe("rus_hound_collar", {Ingredient("glommerfuel", 1), Ingredient("nightmarefuel", 1), Ingredient("monstermeat", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, "near_hound_doghouse", "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+AddRecipe("hound_doghouse", {Ingredient("log", 2), Ingredient("nightmarefuel", 5), Ingredient("transistor", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
