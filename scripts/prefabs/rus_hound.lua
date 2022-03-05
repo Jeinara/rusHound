@@ -143,7 +143,7 @@ end
 local function OnLoad(inst, data)
     if data ~= nil then
         if data.ispet ~= nil then inst:AddTag("rus_hound") end
-        if data.isInHome ~= nil then inst:AddTag("sitting_home") end
+        -- if data.isInHome ~= nil then inst:AddTag("sitting_home") end
         if data.age ~= nil then
             inst.age = data.age
             inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE + (1 * inst.age))
@@ -153,6 +153,13 @@ local function OnLoad(inst, data)
         if inst.sg ~= nil then
             inst.sg:GoToState("idle")
         end
+    end
+end
+
+local function OnLoadPostPass(inst, newents, data)
+    local den = inst.components.entitytracker:GetEntity("home")
+    if den ~= nil and den.components.kitcoonden ~= nil then
+        den.components.kitcoonden:AddKitcoon(inst)
     end
 end
 
@@ -274,6 +281,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
+    inst.OnLoadPostPass = OnLoadPostPass
 
     inst:ListenForEvent("newcombattarget", OnNewTarget)
     inst:ListenForEvent("attacked", OnAttacked)

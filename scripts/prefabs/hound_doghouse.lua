@@ -89,6 +89,7 @@ local function OnSave(inst, data)
 end
 
 local function OnLoad(inst, data)
+    print(inst.components.kitcoonden:GetDebugString())
     if data ~= nil then
         if data.burnt and not inst:HasTag("burnt") then
             OnBurnt(inst)

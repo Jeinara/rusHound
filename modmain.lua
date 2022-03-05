@@ -37,7 +37,7 @@ local HOUND_SEND_HOME = AddAction("HOUND_SEND_HOME", "Дать команду \"
         and act.doer:HasTag("near_hound_doghouse")
     then
         local x, y, z = act.target.Transform:GetWorldPosition()
-        local den = TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})[1]
+        local den = GLOBAL.TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})[1]
         if den ~= nil then
             den.components.kitcoonden:AddKitcoon(act.target, act.doer)
             return true
@@ -61,7 +61,7 @@ local HOUND_GET_BACK = AddAction("HOUND_GET_BACK", "Дать команду \"К
         and act.doer:HasTag("near_hound_doghouse")
     then
         local x, y, z = act.target.Transform:GetWorldPosition()
-        local den = TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})[1]
+        local den = GLOBAL.TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})[1]
         if den ~= nil then
             den.components.kitcoonden:RemoveKitcoon(act.target, act.doer)
             return true
@@ -78,7 +78,7 @@ AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(HOUND_GET_BACK,
 AddComponentAction("SCENE", "rus_hound", function(inst, doer, actions, right)
     if right then
         local x, y, z = inst.Transform:GetWorldPosition()
-        local den = TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})
+        local den = GLOBAL.TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})
 
         if doer ~= nil and doer:HasTag("near_hound_doghouse") and den ~= nil then
             if not inst:HasTag("sitting_home") then
