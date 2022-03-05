@@ -35,7 +35,6 @@ local SHARE_TARGET_DIST = 30
 local HOME_TELEPORT_DIST = 30
 
 -- Ночное поведение
--- TODO добавить логику сна возле дома
 local function ShouldWakeUp(inst)
     return
     (
@@ -71,7 +70,6 @@ end
 
 ------------
 local function retargetfn(inst)
-    print(inst, "retargetfn")
     if
         inst.components.entitytracker:GetEntity("home") == nil and
         inst.components.follower
@@ -88,7 +86,6 @@ local function retargetfn(inst)
 end
 
 local function KeepTarget(inst, target)
-    print(inst, "|target", target, "|canTarget", inst.components.combat:CanTarget(target), "KeepTarget")
     if inst.components.health.currenthealth < (inst.components.health.maxhealth/3)
             or target:HasTag("rus_hound")
             or not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE*2) then
@@ -151,6 +148,7 @@ end
 
 local function OnStopDay(inst)
     --print("OnStopDay", inst)
+    if inst.age < 50 then inst.age = inst.age + 1 end
     if inst:IsAsleep() then
         DoReturn(inst)
     end
@@ -159,12 +157,19 @@ end
 local function OnSave(inst, data)
     data.ispet = inst:HasTag("rus_hound") or nil
     data.isInHome = inst:HasTag("sitting_home") or nil
+    data.age = inst.age
 end
 
 local function OnLoad(inst, data)
     if data ~= nil then
         if data.ispet ~= nil then inst:AddTag("rus_hound") end
         if data.isInHome ~= nil then inst:AddTag("sitting_home") end
+        if data.age ~= nil then
+            inst.age = data.age
+            inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE + (1 * inst.age))
+            inst.components.health:SetMaxHealth(1000 + (50 * inst.age))
+            inst.components.health:StartRegen(5 + (1 * inst.age), 0.2)
+        end
         if inst.sg ~= nil then
             inst.sg:GoToState("idle")
         end
@@ -205,6 +210,8 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst.entity:SetPristine()
 
+    inst.age = 0
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -213,7 +220,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst:AddComponent("named")--
     inst:AddComponent("named_replica")
-    inst.components.named:SetName("Макс")
+    inst.components.named:SetName("Рекс")
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.runspeed = TUNING.HOUND_SPEED
@@ -265,15 +272,15 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst.components.sanityaura.aura = 1
 
     inst:AddComponent("combat")
-    inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE)
+    inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE + (1 * inst.age))
     inst.components.combat:SetAttackPeriod(TUNING.HOUND_ATTACK_PERIOD)
     inst.components.combat:SetRetargetFunction(3, retargetfn)
     inst.components.combat:SetKeepTargetFunction(KeepTarget)
     inst.components.combat:SetHurtSound(inst.sounds.hurt)
 
     inst:AddComponent("health")
-    inst.components.health:SetMaxHealth(1000)
-    inst.components.health:StartRegen(5, 0.2)
+    inst.components.health:SetMaxHealth(1000 + (50 * inst.age))
+    inst.components.health:StartRegen(5 + (1 * inst.age), 0.2)
     inst.components.health.fire_damage_scale = 1 -- Default
 
     inst:AddComponent("inspectable")
