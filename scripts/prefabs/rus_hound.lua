@@ -29,7 +29,7 @@ local sounds =
     hurt = "dontstarve/creatures/hound/hurt",
 }
 
-local WAKE_TO_FOLLOW_DISTANCE = 8
+local WAKE_TO_FOLLOW_DISTANCE = 6
 local SLEEP_NEAR_HOME_DISTANCE = 10
 local SHARE_TARGET_DIST = 30
 local HOME_TELEPORT_DIST = 30
@@ -52,7 +52,6 @@ local function ShouldSleep(inst)
             TheWorld.state.isnight == true
             and not (inst.components.combat and inst.components.combat.target)
             and not (inst.components.burnable and inst.components.burnable:IsBurning())
-            and (not inst.components.homeseeker or inst:IsNear(inst.components.homeseeker.home, SLEEP_NEAR_HOME_DISTANCE))
 end
 
 local function OnNewTarget(inst, data)
@@ -126,31 +125,12 @@ local function GetReturnPos(inst)
     return x + rad * math.cos(angle), y, z - rad * math.sin(angle)
 end
 
-local function DoReturn(inst)
-    --print("DoReturn", inst)
-    if inst.components.homeseeker ~= nil and inst.components.homeseeker:HasHome() then
-        if inst:HasTag("rus_hound") then
-            if inst.components.homeseeker.home:IsAsleep() and not inst:IsNear(inst.components.homeseeker.home, HOME_TELEPORT_DIST) then
-                inst.Physics:Teleport(GetReturnPos(inst.components.homeseeker.home))
-            end
-        elseif inst.components.homeseeker.home.components.childspawner ~= nil then
-            inst.components.homeseeker.home.components.childspawner:GoHome(inst)
-        end
-    end
-end
-
-local function OnEntitySleep(inst)
-    --print("OnEntitySleep", inst)
-    if not TheWorld.state.isday then
-        DoReturn(inst)
-    end
-end
-
-local function OnStopDay(inst)
-    --print("OnStopDay", inst)
-    if inst.age < 50 then inst.age = inst.age + 1 end
-    if inst:IsAsleep() then
-        DoReturn(inst)
+local function OnStartNight(inst)
+    if inst.age < 50 then
+        inst.age = inst.age + 1
+        inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE + (1 * inst.age))
+        inst.components.health:SetMaxHealth(1000 + (50 * inst.age))
+        inst.components.health:StartRegen(5 + (1 * inst.age), 0.2)
     end
 end
 
@@ -261,15 +241,13 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst:AddComponent("entitytracker")
 
-    inst:AddComponent("homeseeker")
-
     inst:AddComponent("rus_hound")
 
     inst:AddComponent("follower")
     inst.components.follower.keepdeadleader = true
 
     inst:AddComponent("sanityaura")
-    inst.components.sanityaura.aura = 1
+    inst.components.sanityaura.aura = 0.1
 
     inst:AddComponent("combat")
     inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE + (1 * inst.age))
@@ -292,8 +270,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst.components.sleeper:SetSleepTest(ShouldSleep)
     inst.components.sleeper:SetWakeTest(ShouldWakeUp)
 
-    inst:WatchWorldState("stopday", OnStopDay)
-    inst.OnEntitySleep = OnEntitySleep
+    inst:WatchWorldState("startnight", OnStartNight)
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
