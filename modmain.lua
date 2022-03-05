@@ -80,7 +80,7 @@ AddComponentAction("SCENE", "rus_hound", function(inst, doer, actions, right)
         local x, y, z = inst.Transform:GetWorldPosition()
         local den = GLOBAL.TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})
 
-        if doer ~= nil and doer:HasTag("near_hound_doghouse") and den ~= nil then
+        if doer ~= nil and doer:HasTag("near_hound_doghouse") and den ~= nil and den:HasTag("hound_doghouse") then
             if not inst:HasTag("sitting_home") then
                 if inst.replica.follower ~= nil and inst.replica.follower:GetLeader() == doer then
                     table.insert(actions, GLOBAL.ACTIONS.HOUND_SEND_HOME)
