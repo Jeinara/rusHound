@@ -78,16 +78,19 @@ AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(HOUND_GET_BACK,
 AddComponentAction("SCENE", "rus_hound", function(inst, doer, actions, right)
     if right then
         local x, y, z = inst.Transform:GetWorldPosition()
-        local den = GLOBAL.TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})
+        local den = GLOBAL.TheSim:FindEntities(x, y, z, TUNING.HOUND_NEAR_HOME_DIST, {"hound_doghouse"})[1]
 
-        if doer ~= nil and doer:HasTag("near_hound_doghouse") and den ~= nil and den:HasTag("hound_doghouse") then
-            if not inst:HasTag("sitting_home") then
-                if inst.replica.follower ~= nil and inst.replica.follower:GetLeader() == doer then
-                    table.insert(actions, GLOBAL.ACTIONS.HOUND_SEND_HOME)
-                end
-            else
-                if inst.replica.follower ~= nil and inst.replica.follower:GetLeader() == nil then
-                    table.insert(actions, GLOBAL.ACTIONS.HOUND_GET_BACK)
+        if doer ~= nil and doer:HasTag("near_hound_doghouse") and den ~= nil then
+            print(den)
+            if (den:HasTag("hound_doghouse")) then
+                if not inst:HasTag("sitting_home") then
+                    if inst.replica.follower ~= nil and inst.replica.follower:GetLeader() == doer then
+                        table.insert(actions, GLOBAL.ACTIONS.HOUND_SEND_HOME)
+                    end
+                else
+                    if inst.replica.follower ~= nil and inst.replica.follower:GetLeader() == nil then
+                        table.insert(actions, GLOBAL.ACTIONS.HOUND_GET_BACK)
+                    end
                 end
             end
         end
@@ -95,6 +98,16 @@ AddComponentAction("SCENE", "rus_hound", function(inst, doer, actions, right)
 end)
 ----------------
 local Ingredient = GLOBAL.Ingredient
+modimport("custom_tech_tree")
 
-AddRecipe("rus_hound_collar", {Ingredient("glommerfuel", 1), Ingredient("nightmarefuel", 1), Ingredient("monstermeat", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, "near_hound_doghouse", "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+AddNewTechTree("HOUND_DOGHOUSE_TREE", 1)
+
+AddRecipeTab("DOGHOUSE", 100, "images/inventoryimages/kokocollar.xml", "kokocollar.tex", nil, true)
+GLOBAL.STRINGS.TABS.DOGHOUSE = "Будка"
+
+---- Продовые рецепты
+AddRecipe("rus_hound_collar", {Ingredient("glommerfuel", 1), Ingredient("nightmarefuel", 1), Ingredient("monstermeat", 1)}, GLOBAL.CUSTOM_RECIPETABS.DOGHOUSE, GLOBAL.TECH.HOUND_DOGHOUSE_TREE_ONE, nil, nil, true, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
 AddRecipe("hound_doghouse", {Ingredient("log", 2), Ingredient("nightmarefuel", 5), Ingredient("transistor", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+----- Тестовые рецепты
+--AddRecipe("rus_hound_collar", {Ingredient("petals", 1)}, GLOBAL.CUSTOM_RECIPETABS.DOGHOUSE, GLOBAL.TECH.HOUND_DOGHOUSE_TREE_ONE, nil, nil, true, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+--AddRecipe("hound_doghouse", {Ingredient("cutgrass", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
