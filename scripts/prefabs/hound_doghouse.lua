@@ -163,7 +163,7 @@ local function fn()
 
     ---------------------
     inst:AddComponent("prototyper")
-    inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.HOUND_DOGHOUSE_TREE_ONE
+    inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.HOUND_DOGHOUSE_TREE
     ---------------------
 
     MakeSnowCovered(inst)
