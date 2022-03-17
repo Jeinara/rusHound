@@ -26,10 +26,48 @@ GLOBAL.STRINGS.CHARACTERS.GENERIC.DESCRIBE.RUS_HOUND = "Верный друг"
 
 TUNING.HOUND_NEAR_HOME_DIST = 10
 
+local cooking = require("cooking")
+
 ---------------- Для управления будкой
 ------ Послать домой
 
+
+
 local HOUND_SEND_HOME = AddAction("HOUND_SEND_HOME", "Дать команду \"Домой\"", function(act)
+    for _,recipes in pairs(cooking.recipes) do
+        for foodName,recipe in pairs(recipes) do
+            if (foodName == "gorge_fishpie" or foodName == "myth_food_ztf") then
+                print("________" .. foodName)
+                local item_tex = foodName..'.tex'
+                local atlas = GLOBAL.GetInventoryItemAtlas(item_tex)
+                local prefabData = GLOBAL.Prefabs[foodName]
+                print(GLOBAL.resolvefilepath(atlas))
+                print(atlas)
+                if prefabData then
+                    -- first run we find assets with exact match of prefab name
+                    print("atlas", not atlas)
+                    print("theSim", not GLOBAL.TheSim:AtlasContains(atlas, item_tex))
+                    if not atlas or not GLOBAL.TheSim:AtlasContains(atlas, item_tex) then
+                        print("both")
+                        for _, asset in ipairs(prefabData.assets) do
+                            if asset.type == "INV_IMAGE" then
+                                print("INV_IMAGE")
+                                item_tex = asset.file..'.tex'
+                                atlas = GLOBAL.GetInventoryItemAtlas(item_tex)
+                            elseif asset.type == "ATLAS" then
+                                print("ATLAS")
+                                atlas = asset.file
+                            end
+                        end
+                    end
+                end
+                print(GLOBAL.resolvefilepath(atlas))
+                for k, v in pairs(recipe) do
+                    print(k, v)
+                end
+            end
+        end
+    end
     if
         act.target ~= nil
         and act.target.components.follower ~= nil
@@ -47,8 +85,8 @@ local HOUND_SEND_HOME = AddAction("HOUND_SEND_HOME", "Дать команду \"
 end)
 HOUND_SEND_HOME.priority = 10
 
-AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(HOUND_SEND_HOME, "dolongaction"))
-AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(HOUND_SEND_HOME, "dolongaction"))
+AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(HOUND_SEND_HOME, "doshortaction"))
+AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(HOUND_SEND_HOME, "doshortaction"))
 
 
 ------ Забрать из дома
@@ -71,8 +109,8 @@ local HOUND_GET_BACK = AddAction("HOUND_GET_BACK", "Дать команду \"К
 end)
 HOUND_GET_BACK.priority = 10
 
-AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(HOUND_GET_BACK, "dolongaction"))
-AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(HOUND_GET_BACK, "dolongaction"))
+AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(HOUND_GET_BACK, "doshortaction"))
+AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(HOUND_GET_BACK, "doshortaction"))
 
 -----
 AddComponentAction("SCENE", "rus_hound", function(inst, doer, actions, right)
@@ -102,7 +140,7 @@ local Ingredient = GLOBAL.Ingredient
 AddRecipeTab("DOGHOUSE", 100, "images/inventoryimages/kokocollar.xml", "kokocollar.tex", nil, true)
 GLOBAL.STRINGS.TABS.DOGHOUSE = "Будка"
 
-local custom_tech_tree = require("rusHound.scripts.customtechtree")
+local custom_tech_tree = require("customtechtree")
 
 custom_tech_tree.AddNewTechType("HOUND_DOGHOUSE_TECH")
 GLOBAL.TECH.HOUND_DOGHOUSE_TECH_ONE = {HOUND_DOGHOUSE_TECH = 1}
@@ -111,11 +149,11 @@ custom_tech_tree.AddPrototyperTree("HOUND_DOGHOUSE_TREE", {HOUND_DOGHOUSE_TECH =
 
 -------------------
 ---- Продовые рецепты
-AddRecipe("rus_hound_collar", {Ingredient("glommerfuel", 1), Ingredient("nightmarefuel", 1), Ingredient("monstermeat", 1)}, GLOBAL.CUSTOM_RECIPETABS.DOGHOUSE, GLOBAL.TECH.HOUND_DOGHOUSE_TECH_ONE, nil, nil, true, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
-AddRecipe("hound_doghouse", {Ingredient("log", 2), Ingredient("nightmarefuel", 5), Ingredient("transistor", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+--AddRecipe("rus_hound_collar", {Ingredient("glommerfuel", 1), Ingredient("nightmarefuel", 1), Ingredient("monstermeat", 1)}, GLOBAL.CUSTOM_RECIPETABS.DOGHOUSE, GLOBAL.TECH.HOUND_DOGHOUSE_TECH_ONE, nil, nil, true, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+--AddRecipe("hound_doghouse", {Ingredient("log", 2), Ingredient("nightmarefuel", 5), Ingredient("transistor", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
 ----- Тестовые рецепты
---AddRecipe("rus_hound_collar", {Ingredient("petals", 1)}, GLOBAL.CUSTOM_RECIPETABS.DOGHOUSE, GLOBAL.TECH.HOUND_DOGHOUSE_TECH_ONE, nil, nil, true, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
---AddRecipe("hound_doghouse", {Ingredient("cutgrass", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+AddRecipe("rus_hound_collar", {Ingredient("petals", 1)}, GLOBAL.CUSTOM_RECIPETABS.DOGHOUSE, GLOBAL.TECH.HOUND_DOGHOUSE_TECH_ONE, nil, nil, true, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
+AddRecipe("hound_doghouse", {Ingredient("cutgrass", 1)}, GLOBAL.RECIPETABS.MAGIC, GLOBAL.TECH.NONE, nil, nil, nil, 1, nil, "images/inventoryimages/kokocollar.xml", "kokocollar.tex" )
 ------------------------
 
-
+GLOBAL.KnownModIndex:IsModEnabled("workshop-1991746508")

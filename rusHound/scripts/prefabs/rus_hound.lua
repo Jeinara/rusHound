@@ -30,9 +30,7 @@ local sounds =
 }
 
 local WAKE_TO_FOLLOW_DISTANCE = 6
-local SLEEP_NEAR_HOME_DISTANCE = 10
 local SHARE_TARGET_DIST = 30
-local HOME_TELEPORT_DIST = 30
 
 -- Ночное поведение
 local function ShouldWakeUp(inst)
@@ -69,8 +67,10 @@ end
 
 ------------
 local function retargetfn(inst)
+    if  inst.components.entitytracker:GetEntity("home") ~= nil then
+        return
+    end
     if
-        inst.components.entitytracker:GetEntity("home") == nil and
         inst.components.follower
         and inst.components.follower:GetLeader() == nil
     then
@@ -107,7 +107,6 @@ local function OnAttacked(inst, data)
             end, 5)
 end
 
----Ты атакуешь
 local function OnAttackOther(inst, data)
     inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST,
             function(dude)
@@ -117,13 +116,6 @@ local function OnAttackOther(inst, data)
             end, 5)
 end
 ------------
-
-local function GetReturnPos(inst)
-    local x, y, z = inst.Transform:GetWorldPosition()
-    local rad = 2
-    local angle = math.random() * 2 * PI
-    return x + rad * math.cos(angle), y, z - rad * math.sin(angle)
-end
 
 local function OnStartNight(inst)
     if inst.age < 50 then
@@ -143,7 +135,6 @@ end
 local function OnLoad(inst, data)
     if data ~= nil then
         if data.ispet ~= nil then inst:AddTag("rus_hound") end
-        -- if data.isInHome ~= nil then inst:AddTag("sitting_home") end
         if data.age ~= nil then
             inst.age = data.age
             inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE + (1 * inst.age))
@@ -163,8 +154,6 @@ local function OnLoadPostPass(inst, newents, data)
     end
 end
 
---TODO нужна система уровней
-
 local function fncommon(bank, build, morphlist, custombrain, tag, data)
     data = data or {}
 
@@ -181,8 +170,8 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst.DynamicShadow:SetSize(2.5, 1.5)
     inst.Transform:SetFourFaced()
 
-    inst:AddTag("notraptrigger")--
-    inst:AddTag("companion")--
+    inst:AddTag("notraptrigger")
+    inst:AddTag("companion")
     inst:AddTag("rus_hound")
 
     if tag ~= nil then
@@ -205,7 +194,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     inst.sounds = sounds
 
-    inst:AddComponent("named")--
+    inst:AddComponent("named")
     inst:AddComponent("named_replica")
     inst.components.named:SetName("Рекс")
 
