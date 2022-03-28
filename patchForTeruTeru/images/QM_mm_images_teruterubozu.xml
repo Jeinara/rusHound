@@ -1,0 +1,20 @@
+<Atlas>
+	<Texture filename="QM_mm_images_teruterubozu.tex"/>
+	<Elements>
+		<Element name="foods_sunflower_sunshower.tex" u1="0.250000" u2="0.492424" v1="0.229167" v2="0.451389"/>
+		<Element name="onmyoji_plant_sunflower_fruit.tex" u1="0.000000" u2="0.242424" v1="0.229167" v2="0.451389"/>
+		<Element name="onmyoji_plant_sunflower_seed.tex" u1="0.250000" u2="0.492424" v1="0.458333" v2="0.680556"/>
+		<Element name="onmyoji_plant_sunflower_seed_cooked.tex" u1="0.750000" u2="0.992424" v1="0.458333" v2="0.680556"/>
+		<Element name="onmyoji_plant_sunflower_petal.tex" u1="0.000000" u2="0.242424" v1="0.458333" v2="0.680556"/>
+		<Element name="foods_sunflower_kaka.tex" u1="0.500000" u2="0.742424" v1="0.229167" v2="0.451389"/>
+		<Element name="foods_sunflower_sunegg.tex" u1="0.250000" u2="0.492424" v1="0.000000" v2="0.222222"/>
+		<Element name="onmyoji_plant_sunflower_fruit_seedless.tex" u1="0.348485" u2="0.590909" v1="0.777778" v2="1.000000"/>
+		<Element name="teruterubozu_recipes.tex" u1="0.000000" u2="0.340909" v1="0.687500" v2="1.000000"/>
+		<Element name="foods_sunflower_marshmallow.tex" u1="0.000000" u2="0.242424" v1="0.000000" v2="0.222222"/>
+		<Element name="item_sheller.tex" u1="0.750000" u2="0.992424" v1="0.229167" v2="0.451389"/>
+		<Element name="onmyoji_plant_sunflower_fruit_cooked.tex" u1="0.598485" u2="0.840909" v1="0.777778" v2="1.000000"/>
+		<Element name="equippable_sunflower_hat.tex" u1="0.750000" u2="0.992424" v1="0.000000" v2="0.222222"/>
+		<Element name="onmyoji_plant_sunflower_recipe.tex" u1="0.500000" u2="0.742424" v1="0.458333" v2="0.680556"/>
+		<Element name="foods_sunflower_nuticecream.tex" u1="0.500000" u2="0.742424" v1="0.000000" v2="0.222222"/>
+	</Elements>
+</Atlas>

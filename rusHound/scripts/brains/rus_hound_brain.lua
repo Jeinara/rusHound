@@ -47,9 +47,9 @@ function rus_hound_brain:OnStart()
         ChaseAndAttack(self.inst, MAX_CHASE_TIME),
         RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
-        WhileNode(function() return GetHome(self.inst) ~= nil end,
-                Wander(self.inst, function() return GetDenPos(self.inst) end, MAX_WANDER_DIST)
-        ),
+        IfNode(function() return self.inst.components.entitytracker:GetEntity("home") ~= nil end, true,
+                Wander(self.inst, function() return GetDenPos(self.inst) end, MAX_WANDER_DIST,
+                        {minwalktime = 2, randwalktime = 3, minwaittime = 2, randwaittime = 4 })),
         Wander(self.inst)
     }, .25)
     self.bt = BT(self.inst, root)

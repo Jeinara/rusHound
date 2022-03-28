@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="b5">
+    <folder id="0" name="doghouse">
+        <file id="0" name="doghouse/test1.png" width="444" height="459" pivot_x="0" pivot_y="1"/>
+    </folder>
+    <entity id="0" name="rushound_doghouse">
+        <animation id="0" name="idle" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="test1_003" folder="0" file="0" abs_x="-214" abs_y="314" abs_pivot_x="0" abs_pivot_y="1" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="test1_003">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="-214" y="314" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="1" name="hit" length="300">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="test1_002" folder="0" file="0" abs_x="-219" abs_y="314" abs_pivot_x="0" abs_pivot_y="1" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+                <key id="1" time="30">
+                    <object_ref id="0" timeline="0" key="1" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="test1_002">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="-219" y="314" angle="0"/>
+                </key>
+                <key id="1" time="30" spin="0">
+                    <object folder="0" file="0" x="-219" y="210.6125" angle="0" scale_y="0.775"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="2" name="placer" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="test1_001" folder="0" file="0" abs_x="-219" abs_y="314" abs_pivot_x="0" abs_pivot_y="1" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="test1_001">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="-219" y="314" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="3" name="place" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="test1_000" folder="0" file="0" abs_x="-219" abs_y="314" abs_pivot_x="0" abs_pivot_y="1" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="test1_000">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="-219" y="314" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="4" name="burnt" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="test1" folder="0" file="0" abs_x="-220" abs_y="153" abs_pivot_x="0" abs_pivot_y="1" abs_angle="0" abs_scale_x="0.98764" abs_scale_y="0.594565" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="test1">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="-220" y="153" angle="0" scale_x="0.98764" scale_y="0.594565"/>
+                </key>
+            </timeline>
+        </animation>
+    </entity>
+</spriter_data>

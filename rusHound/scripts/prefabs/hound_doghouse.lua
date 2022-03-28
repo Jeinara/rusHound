@@ -1,6 +1,6 @@
 local assets =
 {
-    Asset("ANIM", "anim/kitcoonden.zip"),
+    Asset("ANIM", "anim/rushound_doghouse.zip"),
 }
 
 local prefabs =
@@ -111,8 +111,8 @@ local function fn()
 
     inst.MiniMapEntity:SetIcon("kitcoonden.png")
 
-    inst.AnimState:SetBank("kitcoonden")
-    inst.AnimState:SetBuild("kitcoonden")
+    inst.AnimState:SetBank("rushound_doghouse")
+    inst.AnimState:SetBuild("rushound_doghouse")
     inst.AnimState:PlayAnimation("idle")
 
     inst:AddTag("structure")
@@ -183,4 +183,4 @@ local function fn()
 end
 
 return Prefab("hound_doghouse", fn, assets, prefabs),
-MakePlacer("hound_doghouse_placer", "hound_doghouse", "hound_doghouse", "placer")
+MakePlacer("hound_doghouse_placer", "rushound_doghouse", "rushound_doghouse", "placer")
